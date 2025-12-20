@@ -1,222 +1,231 @@
-# 🚀 Complete Deployment Guide for Beginners
+# 🚀 Complete Deployment Guide for Beginners (Coolify Visual Interface)
 
-Welcome! This guide will walk you through deploying Widget Wizard Pro step-by-step. Don't worry if you're new to this - we'll explain everything in simple terms!
+Welcome! This guide will walk you through deploying Widget Wizard Pro using Coolify's visual interface. Everything is done through clicks - no command line needed!
 
 ## 📋 What You'll Need Before Starting
 
 Before we begin, make sure you have:
 
-- ✅ **Coolify** installed on your server (this is where your app will run)
-- ✅ **Docker** installed (this runs Supabase for you)
+- ✅ **Coolify** installed and accessible (you're using it, so you're good!)
 - ✅ A **domain name** (like `myapp.com`) - optional but recommended
 - ✅ An **email account** for sending emails (Gmail, Outlook, etc.)
 
-**Don't have these?** That's okay! We'll explain how to get them as we go.
+**That's it!** Coolify handles everything else for you.
 
 ---
 
 ## 🎯 Overview: What We're Going to Do
 
-Think of this like building a house:
+We'll set up your app in 3 simple parts:
 
-1. **Part 1**: Set up Supabase (the database - where your data lives)
-2. **Part 2**: Deploy your app to Coolify (the house where your app lives)
-3. **Part 3**: Connect everything together (make them talk to each other)
+1. **Part 1**: Install and configure Supabase in Coolify (your database)
+2. **Part 2**: Deploy your app in Coolify (your website)
+3. **Part 3**: Connect everything together and test
 
 Let's start!
 
 ---
 
-# Part 1: Setting Up Supabase (Your Database)
+# Part 1: Setting Up Supabase in Coolify
 
-**What is Supabase?** Think of it as a smart filing cabinet that stores all your app's data (users, widgets, analytics, etc.)
+**What is Supabase?** Think of it as a smart database that stores all your app's data (users, widgets, analytics, etc.)
 
-## Step 1: Download Supabase
+## Step 1: Install Supabase in Coolify
 
-**What we're doing:** We're getting the Supabase software that will run on your server.
+**What we're doing:** Adding Supabase to your Coolify server
 
-1. Open your server's terminal (command line)
-2. Type these commands one by one and press Enter after each:
+1. Open your **Coolify Dashboard** in your web browser
+2. Click **"New Resource"** or the **"+"** button (usually in the top right)
+3. In the search bar, type: **"supabase"**
+4. You should see **"Supabase"** as an option - click on it
+5. Click **"Install"** or **"Create"**
 
-```bash
-git clone --depth 1 https://github.com/supabase/supabase
-```
-
-**What this does:** Downloads Supabase from GitHub
-
-```bash
-cd supabase/docker
-```
-
-**What this does:** Moves you into the Supabase folder
-
-```bash
-cp .env.example .env
-```
-
-**What this does:** Creates a settings file we'll edit next
-
-**✅ Checkpoint:** You should now be in the `supabase/docker` folder and have a file called `.env`
+**✅ Checkpoint:** Supabase should now appear in your Coolify resources list
 
 ---
 
 ## Step 2: Configure Supabase Settings
 
-**What we're doing:** Telling Supabase how to set itself up (like filling out a form)
+**What we're doing:** Setting up Supabase with your preferences
 
-1. Open the `.env` file in a text editor (you can use Notepad, VS Code, or any editor)
-2. You'll see lots of settings. Here's what you need to fill in:
+1. Click on your **Supabase** resource in Coolify
+2. You'll see different tabs/sections. Let's configure them:
 
-### 🔑 Generate Secret Keys (IMPORTANT!)
+### General Settings Tab
 
-**What are these?** These are like passwords that keep your data safe. You need to create 3 unique keys.
+Look for a **"General"** or **"Settings"** tab and configure:
 
-**Easy way to generate keys:**
+**Project Name:** (Optional - you can leave default)
+- Example: `videopop-database`
 
-**On Windows (PowerShell):**
-```powershell
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
-```
-Run this 3 times to get 3 different keys.
+**Domain/URL:** (If you have a custom domain)
+- Example: `supabase.yourdomain.com`
+- Or leave default if you don't have one yet
 
-**On Mac/Linux:**
-```bash
-openssl rand -base64 32
-```
-Run this 3 times to get 3 different keys.
+**Port:** (Usually auto-set, leave as default)
 
-**Or use an online generator:** Visit https://generate-secret.vercel.app/32 (refresh the page 3 times)
+### Environment Variables Tab
 
-### 📝 Fill in Your .env File
+Click on **"Environment Variables"** or **"Env"** tab. You'll need to add these:
 
-Open `.env` and find these lines. Replace the example values with your real values:
+#### Required Variables:
 
-```env
-# ============================================
-# SECRET KEYS (Generate 3 different keys!)
-# ============================================
-ANON_KEY=paste-your-first-generated-key-here
-SERVICE_ROLE_KEY=paste-your-second-generated-key-here
-JWT_SECRET=paste-your-third-generated-key-here
+**1. Database Password:**
+- **Name:** `POSTGRES_PASSWORD`
+- **Value:** Create a strong password (at least 16 characters)
+- **Example:** `MySecurePass123!@#`
+- **💡 Tip:** Write this down - you'll need it later!
 
-# ============================================
-# YOUR WEBSITE ADDRESSES
-# ============================================
-# Replace these with your actual domain names
-SITE_URL=https://your-app-domain.com
-API_EXTERNAL_URL=https://your-supabase-domain.com
+**2. JWT Secret:**
+- **Name:** `JWT_SECRET`
+- **Value:** A long random string (at least 32 characters)
+- **How to generate:** 
+  - Use an online generator: https://generate-secret.vercel.app/32
+  - Or use: `openssl rand -base64 32` in terminal
+  - Refresh the page 3 times to get 3 different keys
 
-# ============================================
-# DATABASE PASSWORD
-# ============================================
-# Create a strong password (at least 16 characters)
-# Example: MySecurePass123!@#
-POSTGRES_PASSWORD=your-strong-password-here
+**3. Anon Key:**
+- **Name:** `ANON_KEY`
+- **Value:** Generate another random key (same way as above)
+- **💡 This is your public key - you'll use this in your app**
 
-# ============================================
-# EMAIL SETTINGS (For sending verification emails)
-# ============================================
-# If using Gmail:
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password-here
-SMTP_SENDER_NAME=VideoPopup
+**4. Service Role Key:**
+- **Name:** `SERVICE_ROLE_KEY`
+- **Value:** Generate a third random key
+- **💡 This is your admin key - keep it secret!**
 
-# If using Outlook:
-# SMTP_HOST=smtp-mail.outlook.com
-# SMTP_PORT=587
-```
+**5. Site URL:**
+- **Name:** `SITE_URL`
+- **Value:** `https://your-app-domain.com`
+- **Or:** `http://your-server-ip` (if you don't have a domain yet)
 
-**💡 Important Notes:**
+**6. API External URL:**
+- **Name:** `API_EXTERNAL_URL`
+- **Value:** Same as your Supabase URL
+- **Example:** `https://supabase.yourdomain.com` or `http://your-server-ip:8000`
 
-- **For Gmail:** You'll need an "App Password" (not your regular password)
+#### Email Settings (For User Verification):
+
+**7. SMTP Host:**
+- **Name:** `SMTP_HOST`
+- **For Gmail:** `smtp.gmail.com`
+- **For Outlook:** `smtp-mail.outlook.com`
+
+**8. SMTP Port:**
+- **Name:** `SMTP_PORT`
+- **Value:** `587`
+
+**9. SMTP User:**
+- **Name:** `SMTP_USER`
+- **Value:** Your email address
+- **Example:** `your-email@gmail.com`
+
+**10. SMTP Password:**
+- **Name:** `SMTP_PASS`
+- **For Gmail:** You need an "App Password" (not your regular password)
   - Go to: Google Account → Security → 2-Step Verification → App Passwords
-  - Create an app password and use that in `SMTP_PASS`
-
+  - Create an app password and use that here
 - **For Outlook:** Use your regular email password
 
-- **Domain Names:** If you don't have domains yet, you can use:
-  - `http://your-server-ip` (temporary, for testing)
-  - Or set up domains later
+**11. SMTP Sender Name:**
+- **Name:** `SMTP_SENDER_NAME`
+- **Value:** `VideoPopup` (or whatever you want)
 
-**✅ Checkpoint:** Your `.env` file should now have all the values filled in (no more "your-xxx-here" placeholders)
-
----
-
-## Step 3: Start Supabase
-
-**What we're doing:** Starting up Supabase so it's ready to use
-
-1. Make sure you're still in the `supabase/docker` folder
-2. Type this command:
-
-```bash
-docker compose up -d
-```
-
-**What this does:** Starts Supabase in the background (the `-d` means "detached" - it runs in the background)
-
-**⏳ Wait Time:** This might take 2-5 minutes the first time. Be patient!
-
-3. Check if everything started correctly:
-
-```bash
-docker compose ps
-```
-
-**What to look for:** You should see several services (like `supabase-db`, `supabase-auth`, etc.) and they should all say "Up" or "healthy"
-
-**✅ Checkpoint:** All Supabase services should be running
+**✅ Checkpoint:** All environment variables should be filled in
 
 ---
 
-## Step 4: Set Up Your Database Tables
+## Step 3: Deploy Supabase
+
+**What we're doing:** Starting up Supabase
+
+1. Make sure all environment variables are saved
+2. Look for a **"Deploy"** or **"Start"** button
+3. Click it!
+4. Wait for Supabase to start (this might take 2-5 minutes)
+
+**⏳ What's happening:** Coolify is setting up all the Supabase services for you
+
+**✅ Checkpoint:** Supabase status should show as "Running" or "Healthy"
+
+---
+
+## Step 4: Access Supabase Studio
+
+**What we're doing:** Opening Supabase's web interface to manage your database
+
+1. In Coolify, find your Supabase resource
+2. Look for a **"Open"** button or a URL link
+3. Click it - this opens **Supabase Studio** in a new tab
+4. You should see the Supabase dashboard with menus on the left
+
+**✅ Checkpoint:** Supabase Studio is open and accessible
+
+---
+
+## Step 5: Set Up Your Database Tables
 
 **What we're doing:** Creating the tables (like spreadsheets) where your app will store data
 
-### Option A: Easy Way (Using Supabase Studio - Recommended for Beginners)
+1. In **Supabase Studio**, click **"SQL Editor"** in the left menu
+2. You'll see a text area where you can write SQL
+3. Now we need to run your migration files:
 
-1. Open your web browser
-2. Go to: `http://your-supabase-domain.com` (or `http://your-server-ip:8000`)
-3. You should see Supabase Studio (a web interface)
-4. Click on **SQL Editor** in the left menu
-5. Open each migration file from your project:
-   - Go to: `widget-wizard-pro-main/supabase/migrations/`
-   - Open each `.sql` file (start with the one that has the earliest date)
-   - Copy ALL the text from the file
-   - Paste it into the SQL Editor
-   - Click **Run** (or press Ctrl+Enter)
-   - Repeat for each migration file in order (oldest to newest)
+### Running Migrations:
 
-**💡 Tip:** The files are named with dates, so run them from oldest to newest:
-- `20251220191224_...` (oldest)
-- `20251220193717_...`
-- `20251220195240_...`
-- ... and so on
+1. Go back to your project files (or GitHub)
+2. Navigate to: `supabase/migrations/` folder
+3. You'll see several `.sql` files with dates in their names
+4. **Important:** Run them in order (oldest to newest):
+   - `20251220191224_43593955-bace-4b41-917e-936d82a23ee6.sql` (oldest)
+   - `20251220193717_052cf577-cf9c-4e67-ab6f-7f7f54924ef1.sql`
+   - `20251220195240_d4dd6cb8-7a1b-457a-af13-d8e780e6522f.sql`
+   - ... and so on (check all files)
 
-### Option B: Using Command Line (Advanced)
+5. For each file:
+   - Open the file
+   - Copy ALL the text (Ctrl+A, then Ctrl+C)
+   - Go back to Supabase Studio SQL Editor
+   - Paste it (Ctrl+V)
+   - Click **"Run"** button (or press Ctrl+Enter)
+   - Wait for "Success" message
+   - Clear the editor and repeat for the next file
 
-If you prefer command line:
-
-```bash
-# Go back to your project folder
-cd /path/to/widget-wizard-pro-main
-
-# Run migrations one by one
-psql postgresql://postgres:YOUR_PASSWORD@localhost:54322/postgres -f supabase/migrations/20251220191224_43593955-bace-4b41-917e-936d82a23ee6.sql
-```
+**💡 Tip:** The files are named with dates, so run them from oldest to newest
 
 **✅ Checkpoint:** All migration files have been run successfully
 
 ---
 
-## Step 5: Configure Authentication Settings
+## Step 6: Get Your Supabase Connection Info
+
+**What we're doing:** Getting the information your app needs to connect to Supabase
+
+1. In **Supabase Studio**, click **"Settings"** (gear icon) in the left menu
+2. Click **"API"** or **"General"**
+3. You'll see important information - write these down:
+
+**📝 Write Down These Values:**
+
+- **Project URL:** (This is your `VITE_SUPABASE_URL`)
+  - Example: `https://supabase.yourdomain.com` or `http://your-server-ip:8000`
+
+- **anon/public key:** (This is your `VITE_SUPABASE_PUBLISHABLE_KEY`)
+  - It's a long string starting with `eyJ...`
+
+- **Project Reference ID:** (This is your `VITE_SUPABASE_PROJECT_ID`)
+  - It's usually a short string like `abcdefghijklmnop`
+
+**✅ Checkpoint:** You have all 3 values written down
+
+---
+
+## Step 7: Configure Authentication Settings
 
 **What we're doing:** Telling Supabase where users should be redirected after logging in
 
-1. In Supabase Studio, click **Authentication** in the left menu
-2. Click **URL Configuration**
+1. In **Supabase Studio**, click **"Authentication"** in the left menu
+2. Click **"URL Configuration"** or **"Settings"**
 3. Fill in:
 
    **Site URL:**
@@ -231,55 +240,20 @@ psql postgresql://postgres:YOUR_PASSWORD@localhost:54322/postgres -f supabase/mi
    https://your-app-domain.com/auth
    ```
 
-4. Click **Save**
+4. Click **"Save"**
 
 **✅ Checkpoint:** Authentication URLs are configured
 
 ---
 
-## Step 6: Create Your First Admin Account
-
-**What we're doing:** Making yourself the administrator so you can access the dashboard
-
-### Step 6a: Sign Up Through the App
-
-1. Once your app is deployed (we'll do that next), go to your app's website
-2. Click "Sign Up" or "Register"
-3. Create an account with your email and password
-4. Verify your email if required
-
-### Step 6b: Make Yourself Admin
-
-1. Go back to Supabase Studio
-2. Click **SQL Editor**
-3. Copy and paste this SQL code:
-
-```sql
--- Replace 'your-email@example.com' with the email you just signed up with
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin'::app_role
-FROM auth.users
-WHERE email = 'your-email@example.com';
-```
-
-4. **IMPORTANT:** Replace `'your-email@example.com'` with your actual email address
-5. Click **Run**
-6. You should see a success message
-
-**✅ Checkpoint:** You now have an admin account!
-
----
-
 # Part 2: Deploying Your App to Coolify
 
-**What is Coolify?** It's like a smart server that automatically builds and runs your app for you.
+**What we're doing:** Setting up your Widget Wizard Pro app in Coolify
 
 ## Step 1: Create a New App in Coolify
 
-**What we're doing:** Telling Coolify about your app so it can deploy it
-
-1. Open your Coolify dashboard in a web browser
-2. Click **"New Resource"** or **"+"** button
+1. Go back to your **Coolify Dashboard**
+2. Click **"New Resource"** or the **"+"** button
 3. Select **"Public Repository"**
 4. Fill in:
 
@@ -300,27 +274,27 @@ WHERE email = 'your-email@example.com';
 
 **What we're doing:** Telling Coolify how to build your app
 
-In Coolify, find the **"Build"** or **"Settings"** section and set:
+1. Click on your app in Coolify
+2. Look for **"Build"**, **"Settings"**, or **"Configuration"** section
+3. Set these values:
 
 **Build Command:**
 ```
 npm install && npm run build
 ```
-*(This installs packages and builds your app)*
 
 **Publish Directory:**
 ```
 dist
 ```
-*(This is where the built files are)*
 
 **Node Version:**
 ```
 18
 ```
-*(Or 20 if you prefer - both work fine)*
+(Or 20 - both work fine)
 
-**Port:** Leave this as default (Coolify will set it automatically)
+**Port:** Leave as default (Coolify will set it automatically)
 
 **✅ Checkpoint:** Build settings are configured
 
@@ -330,34 +304,40 @@ dist
 
 **What we're doing:** Giving your app the information it needs to connect to Supabase
 
-**IMPORTANT:** These variables are like secret passwords. They get "baked into" your app when it builds, so you need to set them BEFORE building.
+**⚠️ IMPORTANT:** These variables get "baked into" your app when it builds, so set them BEFORE building!
 
-1. In Coolify, find **"Environment Variables"** or **"Env"** section
-2. Click **"Add Variable"** for each of these:
+1. In your app's Coolify page, find **"Environment Variables"** or **"Env"** section
+2. Click **"Add Variable"** or **"+"** button
+3. Add these 3 variables one by one:
 
-### Required Variables (Add These 3):
-
-**Variable 1:**
+### Variable 1: Supabase URL
 - **Name:** `VITE_SUPABASE_URL`
-- **Value:** `https://your-supabase-domain.com`
-- *(Replace with your actual Supabase URL)*
+- **Value:** The **Project URL** you wrote down from Step 6
+- **Example:** `https://supabase.yourdomain.com`
 
-**Variable 2:**
+### Variable 2: Supabase Public Key
 - **Name:** `VITE_SUPABASE_PUBLISHABLE_KEY`
-- **Value:** `paste-your-ANON_KEY-here`
-- *(This is the ANON_KEY from your Supabase .env file)*
+- **Value:** The **anon/public key** you wrote down from Step 6
+- **Example:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 
-**Variable 3:**
+### Variable 3: Project ID
 - **Name:** `VITE_SUPABASE_PROJECT_ID`
-- **Value:** `your-project-id`
-- *(You can find this in Supabase Studio under Settings → General)*
+- **Value:** The **Project Reference ID** you wrote down from Step 6
+- **Example:** `abcdefghijklmnop`
 
-**💡 Where to find these values:**
-- `VITE_SUPABASE_URL`: The URL where your Supabase is running
-- `VITE_SUPABASE_PUBLISHABLE_KEY`: The `ANON_KEY` from your Supabase `.env` file
-- `VITE_SUPABASE_PROJECT_ID`: In Supabase Studio → Settings → General → Reference ID
+**💡 Visual Guide:**
+```
+In Coolify Environment Variables section:
+┌─────────────────────────────────────┬──────────────────────────────┐
+│ Name                               │ Value                        │
+├─────────────────────────────────────┼──────────────────────────────┤
+│ VITE_SUPABASE_URL                  │ https://supabase.example.com │
+│ VITE_SUPABASE_PUBLISHABLE_KEY      │ eyJhbGciOiJIUzI1NiIsInR5c... │
+│ VITE_SUPABASE_PROJECT_ID           │ abcdefghijklmnop             │
+└─────────────────────────────────────┴──────────────────────────────┘
+```
 
-**✅ Checkpoint:** All 3 environment variables are added
+**✅ Checkpoint:** All 3 environment variables are added and filled in
 
 ---
 
@@ -365,14 +345,15 @@ dist
 
 **What we're doing:** Actually building and launching your app
 
-1. Double-check that all environment variables are set correctly
-2. Click the **"Deploy"** or **"Build"** button
-3. Watch the build logs - you'll see it:
-   - Installing packages
-   - Building your app
-   - Deploying files
+1. Scroll down and find the **"Deploy"** or **"Build & Deploy"** button
+2. **Double-check:** Make sure all 3 environment variables are set correctly
+3. Click **"Deploy"**!
+4. Watch the build process - you'll see:
+   - 📦 Installing packages...
+   - 🔨 Building app...
+   - 🚀 Deploying...
 
-**⏳ Wait Time:** This usually takes 3-5 minutes
+**⏳ Wait Time:** This usually takes 3-5 minutes. Be patient!
 
 **✅ Checkpoint:** Build completed successfully!
 
@@ -384,35 +365,92 @@ dist
 
 1. Once deployment is complete, Coolify will show you a URL
 2. Click the URL or copy it to your browser
-3. You should see your Widget Wizard Pro homepage!
+3. **🎉 Your app should be live!**
 
-**✅ Checkpoint:** Your app is live and accessible!
+**✅ Checkpoint:** Your app is accessible and loads without errors
 
 ---
 
 # Part 3: Final Setup & Testing
+
+## Step 1: Create Your First Admin Account
+
+**What we're doing:** Making yourself the administrator so you can access the dashboard
+
+### Step 1a: Sign Up Through the App
+
+1. Go to your app's website (the URL from Part 2, Step 5)
+2. Click **"Sign Up"** or **"Register"** (usually in the top right)
+3. Create an account with:
+   - Your email address
+   - A strong password
+4. Verify your email if required (check your email inbox)
+
+**✅ Checkpoint:** You've created an account and can log in
+
+### Step 1b: Make Yourself Admin
+
+1. Go back to **Supabase Studio** (from Part 1, Step 4)
+2. Click **"SQL Editor"** in the left menu
+3. Copy and paste this SQL code:
+
+```sql
+-- Replace 'your-email@example.com' with the email you just signed up with
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'admin'::app_role
+FROM auth.users
+WHERE email = 'your-email@example.com';
+```
+
+4. **IMPORTANT:** Replace `'your-email@example.com'` with your actual email address
+5. Click **"Run"** button
+6. You should see a success message
+
+**✅ Checkpoint:** You now have admin access!
+
+---
+
+## Step 2: Test Your Dashboard
+
+1. Go back to your app's website
+2. Log out if you're logged in
+3. Log back in with your admin account
+4. You should be redirected to `/dashboard`
+5. You should see the dashboard with options like:
+   - Overview
+   - Widgets
+   - Clients
+   - Analytics
+   - Settings
+
+**✅ Checkpoint:** Dashboard is accessible and working
+
+---
 
 ## ✅ Post-Deployment Checklist
 
 Go through this checklist to make sure everything works:
 
 - [ ] **Supabase is running**
-  - Check: `docker compose ps` shows all services as "Up"
+  - Check: In Coolify, Supabase status shows "Running"
   
 - [ ] **Database tables created**
-  - Check: In Supabase Studio → Table Editor, you should see tables like `widgets`, `clients`, `user_roles`
+  - Check: In Supabase Studio → Table Editor, you see tables like `widgets`, `clients`, `user_roles`
   
 - [ ] **Environment variables set**
-  - Check: In Coolify, all 3 VITE_ variables are filled in
+  - Check: In Coolify app settings, all 3 VITE_ variables are filled in
   
 - [ ] **App deployed successfully**
   - Check: Your app URL loads without errors
   
 - [ ] **Can log in**
-  - Check: Go to `/auth` and try logging in with your admin account
+  - Check: Go to `/auth` and can log in with your account
   
 - [ ] **Can access dashboard**
-  - Check: After logging in, you should see the dashboard at `/dashboard`
+  - Check: After logging in, you see the dashboard at `/dashboard`
+  
+- [ ] **Admin access works**
+  - Check: You can see all admin features in the dashboard
   
 - [ ] **Can create a widget**
   - Check: Try creating a test widget in the dashboard
@@ -426,10 +464,10 @@ Go through this checklist to make sure everything works:
 **What it means:** Something went wrong while building your app
 
 **Solutions:**
-1. Check the build logs - look for red error messages
-2. Make sure all environment variables are set (no empty values)
-3. Check Node version is 18 or 20
-4. Try clicking "Rebuild" in Coolify
+1. Check the build logs in Coolify - look for red error messages
+2. Make sure all 3 environment variables are set (no empty values)
+3. Verify the values are correct (especially the Supabase URL and keys)
+4. Try clicking **"Rebuild"** in Coolify
 
 ---
 
@@ -438,10 +476,10 @@ Go through this checklist to make sure everything works:
 **What it means:** Your app can't talk to your database
 
 **Solutions:**
-1. Check if Supabase is running: `docker compose ps`
-2. Verify `VITE_SUPABASE_URL` is correct in Coolify
-3. Make sure `VITE_SUPABASE_PUBLISHABLE_KEY` matches your Supabase ANON_KEY
-4. Check if your server's firewall allows connections
+1. Check if Supabase is running in Coolify (status should be "Running")
+2. Verify `VITE_SUPABASE_URL` is correct in your app's environment variables
+3. Make sure `VITE_SUPABASE_PUBLISHABLE_KEY` matches your Supabase anon key
+4. Check that both Supabase and your app are on the same network/server
 
 ---
 
@@ -452,20 +490,37 @@ Go through this checklist to make sure everything works:
 **Solutions:**
 1. Check redirect URLs in Supabase Studio → Authentication → URL Configuration
 2. Make sure Site URL matches your app's domain
-3. Verify SMTP is configured (for email verification)
-4. Check browser console for errors (F12 → Console tab)
+3. Verify SMTP is configured correctly (for email verification)
+4. Check browser console for errors (Press F12 → Console tab)
 
 ---
 
-### Problem: "I can't access the dashboard"
+### Problem: "I can't access the dashboard / I'm not admin"
 
 **What it means:** You're not recognized as an admin
 
 **Solutions:**
-1. Make sure you completed Step 6 (creating admin user)
+1. Make sure you completed Step 1b (creating admin user with SQL)
 2. Verify the SQL ran successfully in Supabase Studio
 3. Try logging out and logging back in
-4. Check in Supabase Studio → Table Editor → `user_roles` table that your email has `admin` role
+4. Check in Supabase Studio → Table Editor → `user_roles` table:
+   - Your email should be there
+   - The `role` column should say `admin`
+
+---
+
+### Problem: "Environment variables not working"
+
+**What it means:** Your app can't see the variables you set
+
+**Solutions:**
+1. **Important:** `VITE_*` variables are embedded at BUILD TIME
+2. If you changed variables after building, you MUST rebuild:
+   - Go to Coolify → Your App → Click "Rebuild" or "Deploy" again
+3. Make sure variable names are exactly:
+   - `VITE_SUPABASE_URL` (not `SUPABASE_URL`)
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` (not `SUPABASE_KEY`)
+   - `VITE_SUPABASE_PROJECT_ID` (not `PROJECT_ID`)
 
 ---
 
@@ -473,11 +528,11 @@ Go through this checklist to make sure everything works:
 
 **Important things to remember:**
 
-1. ✅ **Never share your `.env` file** - it contains secrets
+1. ✅ **Never share your environment variables** - they contain secrets
 2. ✅ **Use strong passwords** - especially for database
-3. ✅ **Keep your keys secret** - don't post them online
+3. ✅ **Keep your keys secret** - don't post them online or in screenshots
 4. ✅ **Use HTTPS** - especially for production (real users)
-5. ✅ **Update regularly** - keep Docker and Coolify updated
+5. ✅ **Update regularly** - keep Coolify and Supabase updated
 
 ---
 
@@ -494,7 +549,7 @@ Congratulations! Your Widget Wizard Pro platform should now be running.
    - Check analytics
 
 2. **Customize:**
-   - Update site settings
+   - Update site settings in the dashboard
    - Add your logo
    - Configure branding
 
@@ -509,13 +564,13 @@ Congratulations! Your Widget Wizard Pro platform should now be running.
 If you get stuck:
 
 1. **Check the logs:**
-   - Coolify: Dashboard → Your App → Logs
-   - Supabase: `docker compose logs`
+   - **Coolify:** Dashboard → Your App → Logs tab
+   - **Supabase:** In Supabase Studio, check for error messages
 
 2. **Common issues:**
-   - Most problems are missing environment variables
+   - Most problems are missing or incorrect environment variables
    - Double-check all URLs and keys are correct
-   - Make sure Supabase is running
+   - Make sure Supabase is running in Coolify
 
 3. **Get support:**
    - Check Supabase docs: https://supabase.com/docs
@@ -524,3 +579,5 @@ If you get stuck:
 ---
 
 **Good luck with your deployment! 🚀**
+
+*Remember: Everything is done through Coolify's visual interface - no command line needed!*
