@@ -1,0 +1,7 @@
+# Coolify configuration file
+# This helps Coolify detect your app correctly
+
+build:
+  type: static
+  output: dist
+
