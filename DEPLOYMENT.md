@@ -278,25 +278,41 @@ Click on **"Environment Variables"** or **"Env"** tab. You'll need to add these:
 2. Look for **"Build"**, **"Settings"**, or **"Configuration"** section
 3. Set these values:
 
+**⚠️ IMPORTANT:** For Static Site build type, you need to set these separately:
+
+**Install Command:**
+```
+npm install
+```
+⚠️ **This must be set!** It installs your dependencies.
+
 **Build Command:**
 ```
-npm install && npm run build
+npm run build
 ```
+⚠️ **This must be set!** It builds your app and creates the `dist` folder.
 
-**Publish Directory:**
+**Base Directory (or Publish Directory):**
 ```
 dist
 ```
+⚠️ **This tells Coolify where to find your built files!**
+
+**Start Command:**
+```
+(leave empty)
+```
+✅ Static sites don't need a start command.
 
 **Node Version:**
 ```
-18
+20
 ```
-(Or 20 - both work fine)
+(Or 18 - but 20 is recommended for Supabase)
 
 **Port:** Leave as default (Coolify will set it automatically)
 
-**✅ Checkpoint:** Build settings are configured
+**✅ Checkpoint:** Build settings are configured - make sure Install Command and Build Command are both set!
 
 ---
 
