@@ -8,6 +8,8 @@ DROP POLICY IF EXISTS "Anyone can read settings" ON public.site_settings;
 DROP POLICY IF EXISTS "Anyone can read public settings fields" ON public.site_settings;
 
 -- Add policy to allow anon users to read site_settings (needed for the view)
+-- Drop first if it exists
+DROP POLICY IF EXISTS "Anon can read site settings for public view" ON public.site_settings;
 CREATE POLICY "Anon can read site settings for public view"
 ON public.site_settings
 FOR SELECT
@@ -15,6 +17,8 @@ TO anon
 USING (true);
 
 -- Ensure authenticated users can also read (for the view)
+-- Drop first if it exists
+DROP POLICY IF EXISTS "Authenticated can read site settings" ON public.site_settings;
 CREATE POLICY "Authenticated can read site settings"
 ON public.site_settings
 FOR SELECT
@@ -69,6 +73,8 @@ USING (has_role(auth.uid(), 'admin'::app_role))
 WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
 
 -- Create trigger for updated_at on testimonials
+-- Drop first if it exists
+DROP TRIGGER IF EXISTS update_testimonials_updated_at ON public.testimonials;
 CREATE TRIGGER update_testimonials_updated_at
 BEFORE UPDATE ON public.testimonials
 FOR EACH ROW
