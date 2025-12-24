@@ -339,7 +339,15 @@ STEP 6: Verify
 ls -la /var/lib/supabase/functions/
 
 ==========================================
-STEP 7: Restart Supabase
+STEP 8: Verify setup-database Function
+==========================================
+
+ls -la /var/lib/supabase/functions/setup-database/
+
+# You should see index.ts in the directory
+
+==========================================
+STEP 9: Restart Supabase
 ==========================================
 
 Go to Coolify → Supabase Resource → Actions → Restart
