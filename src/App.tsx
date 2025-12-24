@@ -22,6 +22,8 @@ import Samples from "@/pages/dashboard/Samples";
 import Testimonials from "@/pages/dashboard/Testimonials";
 import PublicAnalytics from "@/pages/PublicAnalytics";
 import NotFound from "@/pages/NotFound";
+import Setup from "@/pages/Setup";
+import SetupGuard from "@/components/SetupGuard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,11 +46,14 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/setup" element={<Setup />} />
             <Route path="/analytics/:token" element={<PublicAnalytics />} />
             <Route path="/dashboard" element={
-              <ProtectedRoute requireAdmin>
-                <DashboardLayout />
-              </ProtectedRoute>
+              <SetupGuard>
+                <ProtectedRoute requireAdmin>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              </SetupGuard>
             }>
               <Route index element={<Overview />} />
               <Route path="widgets" element={<Widgets />} />
