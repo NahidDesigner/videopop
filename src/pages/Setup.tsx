@@ -46,14 +46,20 @@ export default function Setup() {
 
   const checkIfSetup = async () => {
     try {
-      // Check if user_roles table exists and has data
+      // Check if user_roles table exists by trying to query it
       const { data, error } = await supabase
         .from('user_roles')
-        .select('count')
+        .select('user_id')
         .limit(1);
 
-      if (!error && data !== null) {
-        // Database seems initialized, check if we have admin
+      if (error) {
+        // Table doesn't exist or database not set up - this is expected
+        setStepStatuses(prev => ({ ...prev, check: 'success' }));
+        return;
+      }
+
+      // Database exists, check if we have admin
+      if (data && data.length > 0) {
         const { data: admins } = await supabase
           .from('user_roles')
           .select('user_id')
@@ -63,11 +69,16 @@ export default function Setup() {
         if (admins && admins.length > 0) {
           // Already set up, redirect to dashboard
           navigate('/dashboard');
+          return;
         }
       }
+
+      // Database exists but no admin - needs setup
+      setStepStatuses(prev => ({ ...prev, check: 'success' }));
     } catch (err) {
-      // Table doesn't exist or error - needs setup
-      console.log('Database needs setup');
+      // Error means database likely not set up - this is fine
+      console.log('Database needs setup:', err);
+      setStepStatuses(prev => ({ ...prev, check: 'success' }));
     }
   };
 
@@ -80,10 +91,13 @@ export default function Setup() {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const setupUrl = `${supabaseUrl}/functions/v1/setup-database`;
 
-      // Step 1: Check database
+      // Step 1: Check database (already done, mark as success)
       setCurrentStep(0);
-      setStepStatuses(prev => ({ ...prev, check: 'running' }));
+      setStepStatuses(prev => ({ ...prev, check: 'success' }));
       setProgress(10);
+      
+      // Small delay to show the step
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Step 2: Run migrations
       setCurrentStep(1);

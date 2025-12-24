@@ -22,7 +22,7 @@ export default function SetupGuard({ children }: { children: React.ReactNode }) 
       // Check if user_roles table exists by trying to query it
       const { data, error } = await supabase
         .from('user_roles')
-        .select('count')
+        .select('user_id')
         .limit(1);
 
       if (error) {
@@ -47,6 +47,7 @@ export default function SetupGuard({ children }: { children: React.ReactNode }) 
       setChecking(false);
     } catch (err) {
       // Error means database likely not set up
+      console.log('Database check error (expected if not set up):', err);
       setNeedsSetup(true);
       setChecking(false);
     }
