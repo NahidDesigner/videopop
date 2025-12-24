@@ -114,7 +114,9 @@ export default function WidgetBuilder() {
   const copyEmbedCode = () => {
     if (!id) return;
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const code = `<script src="${supabaseUrl}/functions/v1/embed-script?id=${id}" async></script>`;
+    // Remove trailing slash to avoid double slashes
+    const cleanUrl = supabaseUrl?.replace(/\/$/, '') || supabaseUrl;
+    const code = `<script src="${cleanUrl}/functions/v1/embed-script?id=${id}" async></script>`;
     navigator.clipboard.writeText(code);
     toast({ title: 'Copied!', description: 'Embed code copied to clipboard.' });
   };
